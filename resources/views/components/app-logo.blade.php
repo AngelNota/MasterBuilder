@@ -2,16 +2,20 @@
     'sidebar' => false,
 ])
 
+@php
+    $brandName = config('app.name', 'PC Master Builder');
+@endphp
+
 @if($sidebar)
-    <flux:sidebar.brand name="Laravel Starter Kit" {{ $attributes }}>
-        <x-slot name="logo" class="flex aspect-square size-8 items-center justify-center rounded-md bg-accent-content text-accent-foreground">
-            <x-app-logo-icon class="size-5 fill-current text-white dark:text-black" />
+    <flux:sidebar.brand :name="$brandName" {{ $attributes }} class="font-heading tracking-tighter uppercase text-white">
+        <x-slot name="logo" class="flex aspect-square size-8 items-center justify-center clip-chamfer bg-cyber-cyan glow-cyan">
+            <x-app-logo-icon class="size-5 fill-current text-background" />
         </x-slot>
     </flux:sidebar.brand>
 @else
-    <flux:brand name="Laravel Starter Kit" {{ $attributes }}>
-        <x-slot name="logo" class="flex aspect-square size-8 items-center justify-center rounded-md bg-accent-content text-accent-foreground">
-            <x-app-logo-icon class="size-5 fill-current text-white dark:text-black" />
+    <flux:brand :name="$brandName" {{ $attributes }} class="font-heading tracking-tighter uppercase text-white">
+        <x-slot name="logo" class="flex aspect-square size-8 items-center justify-center clip-chamfer bg-cyber-cyan glow-cyan">
+            <x-app-logo-icon class="size-5 fill-current text-background" />
         </x-slot>
     </flux:brand>
 @endif

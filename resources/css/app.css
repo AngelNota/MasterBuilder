@@ -9,41 +9,72 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    /* Custom Fonts */
+    --font-sans: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+    --font-heading: 'Rajdhani', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
 
-    --color-zinc-50: #fafafa;
-    --color-zinc-100: #f5f5f5;
-    --color-zinc-200: #e5e5e5;
-    --color-zinc-300: #d4d4d4;
-    --color-zinc-400: #a3a3a3;
-    --color-zinc-500: #737373;
-    --color-zinc-600: #525252;
-    --color-zinc-700: #404040;
-    --color-zinc-800: #262626;
-    --color-zinc-900: #171717;
-    --color-zinc-950: #0a0a0a;
+    /* Cyberpunk Palette */
+    --color-background: #050505;
+    --color-surface: #0F0F13;
+    --color-surface-accent: #1A1A24;
+    
+    --color-cyber-cyan: #00F0FF;
+    --color-cyber-magenta: #BD00FF;
+    
+    /* Validation Statuses */
+    --color-toxic-green: #39FF14;
+    --color-cyber-yellow: #FFD700;
+    --color-laser-red: #FF003C;
 
-    --color-accent: var(--color-neutral-800);
-    --color-accent-content: var(--color-neutral-800);
-    --color-accent-foreground: var(--color-white);
-}
-
-@layer theme {
-    .dark {
-        --color-accent: var(--color-white);
-        --color-accent-content: var(--color-white);
-        --color-accent-foreground: var(--color-neutral-800);
-    }
+    /* Legacy mapping for compatibility with existing components */
+    --color-accent: var(--color-cyber-cyan);
+    --color-accent-content: var(--color-cyber-cyan);
+    --color-accent-foreground: var(--color-background);
 }
 
 @layer base {
+    body {
+        @apply bg-background text-zinc-300 font-sans antialiased selection:bg-cyber-magenta selection:text-white;
+        background-image: 
+            linear-gradient(rgba(26, 26, 36, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(26, 26, 36, 0.1) 1px, transparent 1px);
+        background-size: 50px 50px;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        @apply font-heading uppercase tracking-wider;
+    }
 
     *,
     ::after,
     ::before,
     ::backdrop,
     ::file-selector-button {
-        border-color: var(--color-gray-200, currentColor);
+        border-color: var(--color-surface-accent);
+    }
+}
+
+@layer utilities {
+    .glow-cyan {
+        filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.4));
+    }
+    
+    .glow-magenta {
+        filter: drop-shadow(0 0 8px rgba(189, 0, 255, 0.4));
+    }
+
+    .clip-chamfer {
+        clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    }
+
+    .clip-chamfer-sm {
+        clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);
+    }
+
+    .grain-overlay {
+        @apply fixed inset-0 z-50 pointer-events-none opacity-[0.03];
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
     }
 }
 
