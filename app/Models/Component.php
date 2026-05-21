@@ -39,4 +39,6 @@ class Component extends Model
             ->withPivot('cantidad', 'precio_unitario')
             ->withTimestamps();
     }
+
+   
 }
