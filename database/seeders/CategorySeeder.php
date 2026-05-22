@@ -12,24 +12,23 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
+        // Solo creamos las categorías maestras, el resto se maneja vía JSON y Marcas
         $categories = [
-            'Procesadores' => ['Intel', 'AMD'],
-            'Tarjetas de Video' => ['NVIDIA', 'AMD'],
-            'Memoria RAM' => ['DDR4', 'DDR5'],
-            'Almacenamiento' => ['SSD NVMe', 'SSD SATA', 'HDD'],
-            'Tarjetas Madre' => ['Socket AM4', 'Socket AM5', 'Socket LGA1700'],
-            'Fuentes de Poder' => ['80+ Bronze', '80+ Gold', '80+ Platinum'],
-            'Gabinetes' => ['Mid Tower', 'Full Tower', 'Mini ITX'],
+            'Procesadores',
+            'Tarjetas de Video',
+            'Memoria RAM',
+            'Almacenamiento',
+            'Tarjetas Madre',
+            'Fuentes de Poder',
+            'Gabinetes',
+            'Ventilación'
         ];
 
-        foreach ($categories as $parentName => $subcategories) {
-            $parent = Category::create(['name' => $parentName]);
-            foreach ($subcategories as $subName) {
-                Category::create([
-                    'name' => $subName,
-                    'parent_id' => $parent->id,
-                ]);
-            }
+        foreach ($categories as $categoryName) {
+            Category::firstOrCreate([
+                'name' => $categoryName,
+                'parent_id' => null
+            ]);
         }
     }
 }
