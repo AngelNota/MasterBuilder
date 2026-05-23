@@ -127,6 +127,13 @@ class QuoteWizard extends Component
 
             DB::commit();
 
+            // Enviar correo automático con la cotización adjunta
+            try {
+                \Illuminate\Support\Facades\Mail::to(auth()->user()->email)->send(new \App\Mail\QuoteMail($quote));
+            } catch (\Exception $e) {
+                logger('Error al enviar correo en Wizard: ' . $e->getMessage());
+            }
+
             // Redirigir al detalle de la cotización creada
             return redirect()->route('cotizaciones.show', $quote->id)->with('success', '¡Ensamble guardado exitosamente!');
             

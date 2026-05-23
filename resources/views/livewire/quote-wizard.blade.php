@@ -219,9 +219,103 @@
     @if($pasoActual == 7) Generar Resumen @else Siguiente &rarr; @endif
 </flux:button>
         @else
-            <flux:button wire:click="guardarCotizacion" class="bg-green-600 hover:bg-green-500 text-white font-bold border-none shadow-lg shadow-green-600/20">
-                Confirmar y Guardar Cotización
-            </flux:button>
+            <div class="flex items-center">
+                <button 
+                    type="button" 
+                    onclick="lanzarChequeoIa()"
+                    class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-4 py-2.5 rounded-lg text-sm flex items-center gap-2 cursor-pointer shadow-lg shadow-purple-600/20 mr-2 transition-all">
+                    <x-flux::icon.sparkles class="w-4 h-4" />
+                    Validar con IA
+                </button>
+                <flux:button wire:click="guardarCotizacion" class="bg-green-600 hover:bg-green-500 text-white font-bold border-none shadow-lg shadow-green-600/20">
+                    Confirmar y Guardar Cotización
+                </flux:button>
+            </div>
         @endif
     </div>
+
+    <!-- MODAL DE LA IA -->
+    <div id="modal-ia" class="hidden fixed inset-0 z-50 overflow-y-auto flex items-center justify-center bg-black/70 backdrop-blur-sm">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-xl max-w-2xl w-full p-6 m-4 relative shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b border-zinc-800 pb-3">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <x-flux::icon.sparkles class="w-5 h-5 text-blue-400" />
+                    Asistente de Compatibilidad IA
+                </h3>
+                <button onclick="cerrarModalIa()" class="text-zinc-400 hover:text-white cursor-pointer bg-transparent border-none p-0">
+                    <x-flux::icon.x-mark class="w-5 h-5" />
+                </button>
+            </div>
+            
+            <div id="modal-ia-cargando" class="py-8 text-center text-zinc-400 flex flex-col items-center justify-center gap-3">
+                <div class="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                <p class="font-mono text-xs uppercase tracking-wider">Iniciando diagnóstico técnico...</p>
+            </div>
+            
+            <div id="modal-ia-resultado" class="hidden text-zinc-300 text-sm overflow-y-auto max-h-[400px] pr-2 space-y-4 prose prose-invert">
+                <!-- El contenido parseado irá aquí -->
+            </div>
+            
+            <div class="mt-6 border-t border-zinc-800 pt-4 flex justify-end">
+                <button onclick="cerrarModalIa()" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-4 py-2 rounded-lg text-sm cursor-pointer">
+                    Cerrar Diagnóstico
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        function lanzarChequeoIa() {
+            const modal = document.getElementById('modal-ia');
+            const cargando = document.getElementById('modal-ia-cargando');
+            const resultado = document.getElementById('modal-ia-resultado');
+            
+            modal.classList.remove('hidden');
+            cargando.classList.remove('hidden');
+            resultado.classList.add('hidden');
+            resultado.innerHTML = '';
+            
+            // Obtener IDs de Livewire
+            const componentIds = [
+                @this.get('cpu_id'),
+                @this.get('motherboard_id'),
+                @this.get('ram_id'),
+                @this.get('storage_id'),
+                @this.get('gpu_id'),
+                @this.get('case_id'),
+                @this.get('psu_id')
+            ].filter(id => id); // filtrar vacíos
+
+            fetch("{{ route('ai.compatibility') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ components: componentIds })
+            })
+            .then(res => res.json())
+            .then(data => {
+                cargando.classList.add('hidden');
+                resultado.classList.remove('hidden');
+                
+                if (data.success) {
+                    // Parsear Markdown a HTML con marked
+                    resultado.innerHTML = marked.parse(data.analysis);
+                } else {
+                    resultado.innerHTML = `<p class="text-red-400">Error: ${data.message || 'No se pudo completar el análisis.'}</p>`;
+                }
+            })
+            .catch(err => {
+                cargando.classList.add('hidden');
+                resultado.classList.remove('hidden');
+                resultado.innerHTML = `<p class="text-red-400">Error de conexión: ${err.message}</p>`;
+            });
+        }
+        
+        function cerrarModalIa() {
+            document.getElementById('modal-ia').classList.add('hidden');
+        }
+    </script>
 </div>

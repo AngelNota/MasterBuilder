@@ -8,10 +8,19 @@
                     <h1 class="text-3xl font-bold text-white tracking-tight">Cotización #{{ str_pad($cotizacione->id, 5, '0', STR_PAD_LEFT) }}</h1>
                     <p class="text-sm text-zinc-400">Generada el {{ $cotizacione->created_at->format('d M Y - H:i') }}</p>
                 </div>
-                <button class="bg-zinc-800 text-zinc-300 border border-zinc-700 px-4 py-2 rounded-lg text-sm hover:text-white transition-colors flex items-center gap-2">
-                    <x-flux::icon.document-arrow-down class="w-4 h-4"/>
-                    Exportar PDF
-                </button>
+                <div class="flex items-center gap-3">
+                    <form action="{{ route('cotizaciones.reenviar', $cotizacione) }}" method="POST" class="inline">
+                        @csrf
+                        <button type="submit" class="bg-zinc-800 text-zinc-300 border border-zinc-700 px-4 py-2 rounded-lg text-sm hover:text-white transition-colors flex items-center gap-2 cursor-pointer">
+                            <x-flux::icon.paper-airplane class="w-4 h-4"/>
+                            Enviar por Correo
+                        </button>
+                    </form>
+                    <a href="{{ route('cotizaciones.pdf', $cotizacione) }}" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 font-bold shadow-md shadow-blue-600/10">
+                        <x-flux::icon.document-arrow-down class="w-4 h-4"/>
+                        Exportar PDF
+                    </a>
+                </div>
             </div>
 
             @if(session('success'))

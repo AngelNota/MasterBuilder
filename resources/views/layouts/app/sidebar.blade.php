@@ -21,9 +21,15 @@
                     Panel de Control
                 </flux:sidebar.item>
 
+                @role('admin')
                 <flux:sidebar.item icon="archive-box" :href="route('inventario.index')">
                     Inventario
                 </flux:sidebar.item>
+
+                <flux:sidebar.item icon="tag" :href="route('categorias.index')">
+                    Categorías
+                </flux:sidebar.item>
+                @endrole
 
                 <flux:sidebar.item icon="document-text" :href="route('cotizaciones.index')">
                     Cotizaciones
