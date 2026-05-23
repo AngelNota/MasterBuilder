@@ -13,88 +13,90 @@ class ComponentSeeder extends Seeder
      */
     public function run(): void
     {
-        $intel = Category::where('name', 'Intel')->first();
-        $amd = Category::where('name', 'AMD')->first();
-        $nvidia = Category::where('name', 'NVIDIA')->first();
-        $ddr4 = Category::where('name', 'DDR4')->first();
-        $nvme = Category::where('name', 'SSD NVMe')->first();
+        // 1. Obtenemos las categorías que acabamos de crear
+        $catProcesador = Category::where('name', 'Procesadores')->first();
+        $catGrafica = Category::where('name', 'Tarjetas de Video')->first();
+        $catRam = Category::where('name', 'Memoria RAM')->first();
+        $catMotherboard = Category::where('name', 'Tarjetas Madre')->first();
+        $catAlmacenamiento = Category::where('name', 'Almacenamiento')->first();
 
-        Component::create([
-            'category_id' => $intel->id,
-            'nombre' => 'Core i9-13900K',
-            'marca' => 'Intel',
-            'modelo' => 'i9-13900K',
-            'precio' => 12500.00,
-            'stock' => 10,
-            'especificaciones' => [
-                'núcleos' => 24,
-                'hilos' => 32,
-                'frecuencia_base' => '3.0 GHz',
-                'frecuencia_turbo' => '5.8 GHz',
-                'socket' => 'LGA1700',
-                'tdp' => '125W',
-            ],
-        ]);
+        // 2. Insertamos componentes con la nueva estructura JSON
 
+        // PROCESADORES
         Component::create([
-            'category_id' => $amd->id,
+            'category_id' => $catProcesador->id,
             'nombre' => 'Ryzen 9 7950X',
             'marca' => 'AMD',
-            'modelo' => '7950X',
+            'modelo' => '100-100000514WOF',
             'precio' => 11800.00,
             'stock' => 15,
             'especificaciones' => [
-                'núcleos' => 16,
-                'hilos' => 32,
-                'frecuencia_base' => '4.5 GHz',
-                'frecuencia_turbo' => '5.7 GHz',
                 'socket' => 'AM5',
-                'tdp' => '170W',
             ],
         ]);
 
         Component::create([
-            'category_id' => $nvidia->id,
-            'nombre' => 'GeForce RTX 4090',
+            'category_id' => $catProcesador->id,
+            'nombre' => 'Core i9-13900K',
+            'marca' => 'Intel',
+            'modelo' => 'BX8071513900K',
+            'precio' => 12500.00,
+            'stock' => 10,
+            'especificaciones' => [
+                'socket' => 'LGA1700',
+            ],
+        ]);
+
+        // TARJETAS MADRE
+        Component::create([
+            'category_id' => $catMotherboard->id,
+            'nombre' => 'ROG STRIX X870-E GAMING',
             'marca' => 'ASUS',
-            'modelo' => 'ROG Strix OC',
-            'precio' => 45000.00,
+            'modelo' => 'X870-E',
+            'precio' => 6500.00,
             'stock' => 5,
             'especificaciones' => [
-                'vram' => '24GB GDDR6X',
-                'interfaz' => '384-bit',
-                'puertos' => ['HDMI 2.1a', 'DisplayPort 1.4a'],
-                'recomendada_psu' => '1000W',
+                'socket' => 'AM5',
+                'tipo_memoria' => 'DDR5'
             ],
         ]);
 
+        // MEMORIA RAM
         Component::create([
-            'category_id' => $ddr4->id,
-            'nombre' => 'Vengeance LPX 16GB',
-            'marca' => 'Corsair',
-            'modelo' => 'CMK16GX4M2B3200C16',
-            'precio' => 1200.00,
-            'stock' => 50,
+            'category_id' => $catRam->id,
+            'nombre' => 'Kingston Fury Beast 32GB 6000MHz',
+            'marca' => 'Kingston',
+            'modelo' => 'KF560C40BS-32',
+            'precio' => 2800.00,
+            'stock' => 20,
             'especificaciones' => [
-                'capacidad' => '16GB (2x8GB)',
-                'frecuencia' => '3200MHz',
-                'latencia' => 'CL16',
-                'voltaje' => '1.35V',
+                'tipo_memoria' => 'DDR5'
             ],
         ]);
 
+        // TARJETAS DE VIDEO
         Component::create([
-            'category_id' => $nvme->id,
+            'category_id' => $catGrafica->id,
+            'nombre' => 'GeForce RTX 4090 ROG Strix',
+            'marca' => 'ASUS',
+            'modelo' => 'ROG-STRIX-RTX4090-O24G',
+            'precio' => 45000.00,
+            'stock' => 3,
+            'especificaciones' => [
+                'vram' => '24'
+            ],
+        ]);
+
+        // ALMACENAMIENTO
+        Component::create([
+            'category_id' => $catAlmacenamiento->id,
             'nombre' => '980 PRO 1TB',
             'marca' => 'Samsung',
             'modelo' => 'MZ-V8P1T0BW',
             'precio' => 2500.00,
             'stock' => 30,
             'especificaciones' => [
-                'capacidad' => '1TB',
-                'interfaz' => 'PCIe Gen 4.0 x4',
-                'lectura_secuencial' => '7000 MB/s',
-                'escritura_secuencial' => '5000 MB/s',
+                'tipo_almacenamiento' => 'NVME'
             ],
         ]);
     }
