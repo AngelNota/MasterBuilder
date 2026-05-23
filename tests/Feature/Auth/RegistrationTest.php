@@ -26,6 +26,8 @@ class RegistrationTest extends TestCase
 
     public function test_new_users_can_register(): void
     {
+        \Illuminate\Support\Facades\Mail::fake();
+
         $response = $this->post(route('register.store'), [
             'name' => 'John',
             'last_name' => 'Doe',
@@ -44,5 +46,9 @@ class RegistrationTest extends TestCase
             'last_name' => 'Doe',
             'email' => 'test@example.com',
         ]);
+
+        \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\WelcomeMail::class, function ($mail) {
+            return $mail->hasTo('test@example.com') && $mail->user->name === 'John';
+        });
     }
 }
