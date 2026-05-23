@@ -34,9 +34,11 @@ class Component extends Model
     }
 
     public function quotes(): BelongsToMany
-    {
-        return $this->belongsToMany(Quote::class)
-            ->withPivot('cantidad', 'precio_unitario')
-            ->withTimestamps();
-    }
+{
+    return $this->belongsToMany(Quote::class, 'quote_component')
+        ->withPivot('cantidad', 'precio_unitario')
+        ->withTimestamps();
+}
+
+   
 }

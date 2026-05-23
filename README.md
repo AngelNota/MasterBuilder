@@ -62,7 +62,7 @@ cd MasterBuilder
 ### 2. Install Dependencies
 ```bash
 composer install
-npm install
+pnpm install
 ```
 
 ### 3. Environment Configuration
