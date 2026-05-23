@@ -14,22 +14,21 @@ class DashboardController extends Controller
         $user = auth()->user();
 
         // 1. Métricas generales para las tarjetas superiores
-        $activeQuotes = Quote::count();
+        $activeQuotes = $user->hasRole('admin') ? Quote::count() : Quote::where('user_id', $user->id)->count();
         $totalStock = Component::sum('stock');
         // Capacidad simulación del almacén (500 piezas = 100%)
         $inventoryLoad = min(100, round(($totalStock / 500) * 100)); 
-        $aiValidations = 342; // Simulado temporalmente
+        $aiValidations = $user->hasRole('admin') ? 342 : Quote::where('user_id', $user->id)->count() * 2; // Simulado
 
-        // 2. Inicializar variables para el Administrador
-        $totalSales = 0;
+        // 2. Inicializar variables para el Administrador y Cliente
+        $totalSales = $user->hasRole('admin') ? Quote::sum('total') : Quote::where('user_id', $user->id)->sum('total');
         $chartLabels = [];
         $chartData = [];
+        $myQuotes = collect();
+        $lowStockComponents = collect();
 
         // Si es administrador, calculamos métricas de ventas y componentes populares (Rúbrica)
         if ($user->hasRole('admin')) {
-            // Suma total de los presupuestos generados
-            $totalSales = Quote::sum('total');
-
             // Obtener los 5 componentes más populares usando la tabla pivote quote_component
             $popularComponents = DB::table('quote_component')
                 ->select('component_id', DB::raw('SUM(cantidad) as total_qty'))
@@ -46,6 +45,19 @@ class DashboardController extends Controller
                     $chartData[] = (int) $item->total_qty;
                 }
             }
+
+            // Componentes con stock bajo (menos de 3 unidades) para alertas de inventario bajo
+            $lowStockComponents = Component::where('stock', '<', 3)
+                ->orderBy('stock')
+                ->take(5)
+                ->get();
+        } else {
+            // Cargar las cotizaciones del cliente
+            $myQuotes = Quote::where('user_id', $user->id)
+                ->with('components')
+                ->latest()
+                ->take(5)
+                ->get();
         }
 
         return view('dashboard', [
@@ -55,6 +67,8 @@ class DashboardController extends Controller
             'totalSales' => $totalSales,
             'chartLabels' => $chartLabels,
             'chartData' => $chartData,
+            'myQuotes' => $myQuotes,
+            'lowStockComponents' => $lowStockComponents,
         ]);
     }
 }

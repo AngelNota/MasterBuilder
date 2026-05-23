@@ -7,6 +7,9 @@ use App\Models\Component;
 use App\Models\Category;
 use App\Services\ComponentCompatibilityService;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\QuoteMail;
 
 class QuoteController extends Controller
 {
@@ -82,6 +85,14 @@ class QuoteController extends Controller
 
         $quote->components()->attach($attachData);
 
+        // Enviar correo automático con la cotización adjunta
+        try {
+            Mail::to(auth()->user()->email)->send(new QuoteMail($quote));
+        } catch (\Exception $e) {
+            // Continuar si falla el correo en local
+            logger('Error al enviar correo: ' . $e->getMessage());
+        }
+
         return redirect()->route('cotizaciones.show', $quote)->with('success', 'Cotización generada y stock actualizado.');
     }
 
@@ -96,5 +107,32 @@ class QuoteController extends Controller
         $cotizacione->load('components', 'user');
 
         return view('cotizaciones.show', compact('cotizacione'));
+    }
+
+    public function downloadPdf(Quote $cotizacione)
+    {
+        if (!auth()->user()->hasRole('admin') && $cotizacione->user_id !== auth()->id()) {
+            abort(403, 'No tienes permiso para descargar este PDF.');
+        }
+
+        $cotizacione->load('components', 'user');
+        $pdf = Pdf::loadView('cotizaciones.pdf', ['cotizacione' => $cotizacione]);
+        return $pdf->download("Presupuesto_PCMB_{$cotizacione->id}.pdf");
+    }
+
+    public function resendEmail(Quote $cotizacione)
+    {
+        if (!auth()->user()->hasRole('admin') && $cotizacione->user_id !== auth()->id()) {
+            abort(403, 'No tienes permiso para reenviar este correo.');
+        }
+
+        $cotizacione->load('components', 'user');
+
+        try {
+            Mail::to($cotizacione->user->email)->send(new QuoteMail($cotizacione));
+            return back()->with('success', 'El correo de la cotización ha sido reenviado con éxito.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'No se pudo enviar el correo: ' . $e->getMessage());
+        }
     }
 }

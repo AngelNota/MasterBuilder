@@ -5,7 +5,11 @@
     @include('partials.head')
 </head>
 
-<body class="min-h-screen bg-zinc-950 text-zinc-300 antialiased selection:bg-blue-600 selection:text-white">
+<body class="min-h-screen bg-background text-zinc-300 antialiased selection:bg-cyber-magenta selection:text-white font-sans">
+    <div class="grain-overlay"></div>
+    <div class="fixed inset-0 pointer-events-none opacity-10">
+        <div class="absolute inset-0" style="background-image: linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px); background-size: 80px 80px;"></div>
+    </div>
 
     <flux:sidebar sticky collapsible="mobile" class="border-e border-zinc-800 bg-zinc-950">
         <flux:sidebar.header class="p-6">
@@ -21,9 +25,15 @@
                     Panel de Control
                 </flux:sidebar.item>
 
+                @role('admin')
                 <flux:sidebar.item icon="archive-box" :href="route('inventario.index')">
                     Inventario
                 </flux:sidebar.item>
+
+                <flux:sidebar.item icon="tag" :href="route('categorias.index')">
+                    Categorías
+                </flux:sidebar.item>
+                @endrole
 
                 <flux:sidebar.item icon="document-text" :href="route('cotizaciones.index')">
                     Cotizaciones
